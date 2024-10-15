@@ -1,14 +1,12 @@
 package infovk.xx_nachtisch_xx_exe;
 
-import java.awt.*;
-import java.lang.reflect.Array;
-
 import static infovk.xx_nachtisch_xx_exe.Utils.*;
-import static infovk.xx_nachtisch_xx_exe.Wrappers.*;
 
 public class MyFirstBehavior extends SimpleRobotBehavior {
 	double DIST_TO_ENEMY = 50.0;
 	double SIZE = 36;
+
+	double STEP = 10;
 
 	double targetAngle = 0.0;
 
@@ -65,11 +63,10 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		turn(targetAngle);
 
 		double dist = e.getDistance();
+		double power = STEP;
 
-		if (dist > SIZE + DIST_TO_ENEMY) ahead(10);
-		else {
-			ahead(-10);
-		}
+		if (dist > SIZE + DIST_TO_ENEMY) ahead(power);
+		else ahead(-power);
 	}
 
 
