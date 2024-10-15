@@ -36,7 +36,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		double ownAngle = this.getHeading() - this.getRadarHeading();
 		double enemyAngle = e.getBearing();
 
-		lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle) * 1.1);
+		lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle)) * 1.1;
 		turnRadar(lastEnemyAngle);
 	}
 
