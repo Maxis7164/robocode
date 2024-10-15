@@ -1,4 +1,4 @@
-package infovk.xx_nachtisch_xx.exe;
+package infovk.xx_nachtisch_xx_exe;
 
 import robocode.AdvancedRobot;
 import java.awt.Graphics2D;
