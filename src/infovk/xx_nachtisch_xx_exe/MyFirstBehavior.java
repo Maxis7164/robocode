@@ -36,6 +36,14 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 		return normalRelativeAngle((own + enemy)) * 1.1;
 	}
+
+	double getFirePower(ScannedRobotEvent e) {
+		double dist = Math.abs(e.getDistance());
+
+		System.out.println(dist);
+
+		return dist < (DIST_TO_ENEMY + SIZE) ? 3 : min(100 / ( dist - 60 ), 3);
+	}
 	//#endregion
 
 	void scan() {
@@ -54,10 +62,11 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		ScannedRobotEvent e = getScannedRobotEvent();
 
 		targetAngle = getEnemyAngle(e, getHeading());
-		System.out.println(targetAngle);
 		turn(targetAngle);
 
-		if (e.getDistance() > SIZE + DIST_TO_ENEMY) ahead(10);
+		double dist = e.getDistance();
+
+		if (dist > SIZE + DIST_TO_ENEMY) ahead(10);
 		else {
 			ahead(-10);
 		}
@@ -65,15 +74,19 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 
 	void shoot() {
-		if (getGunHeat() > 0 || !hasScannedRobot()) return;
+		if (!hasScannedRobot()) return;
 
 		ScannedRobotEvent e = getScannedRobotEvent();
 
+		//get angle & rotate to enemy's pos
 		double gunAngle = getEnemyAngle(e, getGunHeading());
-
 		turnGun(gunAngle);
 
-		fireBullet(0.1);
+		//calc shoot
+		if (getGunHeat() > 0) return;
+
+		double power = getFirePower(e);
+		fireBullet(power);
 
 	}
 }
