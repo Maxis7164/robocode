@@ -7,17 +7,11 @@ import static infovk.xx_nachtisch_xx_exe.Utils.*;
 import static infovk.xx_nachtisch_xx_exe.Wrappers.*;
 
 public class MyFirstBehavior extends SimpleRobotBehavior {
-	double STEP = 0.05;
-	double SIN_MOD = 40;
+	double DIST_TO_ENEMY = 50.0;
+	double SIZE = 36;
 
-	int GAP = 36;
+	double targetAngle = 0.0;
 
-	int SIZE_X = 800;
-	int SIZE_Y = 600;
-	
-	double t = -1; // t-value [-1; 1]
-	double dir = 1; // determines turning direction
-	
 	public MyFirstBehavior(SimpleRobot  robot) {
 		super(robot);
 	}
@@ -42,32 +36,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 		return normalRelativeAngle((own + enemy)) * 1.1;
 	}
-
-	boolean heading(int dir) {
-		if (dir < 0 || dir > 3) return false;
-		double head = getHeading();
-
-		if (dir == 0) return head > 315 || head < 45;
-		else if (dir == 1) return head > 45 && head < 135;
-		else if (dir == 2) return head > 135 && head < 225;
-		else return head > 225 && head < 315;
-	}
-
-	void continueT() {
-		t += dir * STEP;
-		if (t >= 1) dir = -1;
-		else if (t <= -1) dir = 1;
-	}
-
-	int avoidWalls() {
-		double x = getX();
-		double y = getY();
-
-		return heading(0) && y >= 559 ||
-		heading(2) && y <= 41 ||
-		heading(1) && x >= 759 ||
-		heading(3) && x <= 41 ? -1 : 1;
-	}
 	//#endregion
 
 	void scan() {
@@ -81,12 +49,18 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	}
 
 	void drive() {
-		turn(Math.sin(t) * SIN_MOD);
+		if (!hasScannedRobot()) return;
 
-		int dir = avoidWalls();
+		ScannedRobotEvent e = getScannedRobotEvent();
 
-		ahead(dir * 50);
-		continueT();
+		targetAngle = getEnemyAngle(e, getHeading());
+		System.out.println(targetAngle);
+		turn(targetAngle);
+
+		if (e.getDistance() > SIZE + DIST_TO_ENEMY) ahead(10);
+		else {
+			ahead(-10);
+		}
 	}
 
 
