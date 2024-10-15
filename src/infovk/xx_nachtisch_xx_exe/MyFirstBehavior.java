@@ -87,7 +87,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		turnGun(gunAngle);
 
 		//calc shoot
-		if (getGunHeat() > 0) return;
+		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
 		double power = getFirePower(e);
 		fireBullet(power);
