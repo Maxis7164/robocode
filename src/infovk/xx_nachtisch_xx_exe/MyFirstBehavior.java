@@ -44,6 +44,19 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	}
 	//#endregion
 
+	//#region diving behaviors
+	void targetEnemy(ScannedRobotEvent e) {
+		targetAngle = getEnemyAngle(e, getHeading());
+		turn(targetAngle);
+
+		double dist = e.getDistance();
+		double power = STEP;
+
+		if (dist > SIZE + DIST_TO_ENEMY) ahead(power);
+		else ahead(-power);
+	}
+	//#endregion
+
 	void scan() {
 		if (!hasScannedRobot()) return;
 
@@ -58,15 +71,9 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		if (!hasScannedRobot()) return;
 
 		ScannedRobotEvent e = getScannedRobotEvent();
-
-		targetAngle = getEnemyAngle(e, getHeading());
-		turn(targetAngle);
-
 		double dist = e.getDistance();
-		double power = STEP;
 
-		if (dist > SIZE + DIST_TO_ENEMY) ahead(power);
-		else ahead(-power);
+		if (dist >= 300) targetEnemy(e);
 	}
 
 
