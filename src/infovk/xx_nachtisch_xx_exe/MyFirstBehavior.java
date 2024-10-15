@@ -17,10 +17,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		turnRadar(720);
 	}
 
-	void isTrue(boolean cond) {
-		paintDot(new Point(50, 50), cond ? Color.GREEN : Color.RED);
-	}
-
 	@Override
 	void execute() {
 		scan();
@@ -29,15 +25,17 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	}
 
 	void scan() {
-		if (!hasScannedRobot()) return;
+		if (hasScannedRobot()) {
+			System.out.println("HAI");
 
-		ScannedRobotEvent e = getScannedRobotEvent();
+			ScannedRobotEvent e = getScannedRobotEvent();
 
-		double ownAngle = this.getHeading() - this.getRadarHeading();
-		double enemyAngle = e.getBearing();
+			double ownAngle = this.getHeading() - this.getRadarHeading();
+			double enemyAngle = e.getBearing();
 
-		lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle) * 1.1);
-		turnRadar(lastEnemyAngle);
+			lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle) * 1.1);
+			turnRadar(lastEnemyAngle);
+		}
 	}
 
 	void shoot() {
