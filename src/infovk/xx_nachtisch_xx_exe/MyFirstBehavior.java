@@ -5,6 +5,7 @@ import java.awt.*;
 import static infovk.xx_nachtisch_xx_exe.Utils.*;
 import static infovk.xx_nachtisch_xx_exe.Wrappers.*;
 
+
 public class MyFirstBehavior extends SimpleRobotBehavior {
 	double lastEnemyAngle = 0;
 
@@ -25,26 +26,23 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	}
 
 	void scan() {
-		if (hasScannedRobot()) {
-			System.out.println("HAI");
+		if (!hasScannedRobot()) return;
 
-			ScannedRobotEvent e = getScannedRobotEvent();
+		ScannedRobotEvent e = getScannedRobotEvent();
 
-			double ownAngle = this.getHeading() - this.getRadarHeading();
-			double enemyAngle = e.getBearing();
+		double ownAngle = this.getHeading() - this.getRadarHeading();
+		double enemyAngle = e.getBearing();
 
-			lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle) * 1.1);
-			turnRadar(lastEnemyAngle);
-		}
+		lastEnemyAngle = normalRelativeAngle((ownAngle + enemyAngle)) * 1.1;
+
+		turnRadar(lastEnemyAngle);
 	}
 
 	void shoot() {
 		if (this.getGunHeat() > 0) return;
 
-		ScannedRobotEvent e = getScannedRobotEvent();
 
 		turnGun(lastEnemyAngle);
 		fireBullet(1);
 	}
-
 }
