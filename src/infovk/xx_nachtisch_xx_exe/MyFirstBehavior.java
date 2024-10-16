@@ -8,6 +8,8 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 	double STEP = 10;
 
+	double circleDir = 1;
+
 	ScannedRobotEvent e = null;
 
 	public MyFirstBehavior(SimpleRobot robot) {
@@ -51,6 +53,18 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 		ahead(power);
 	}
+
+	void circleAround() {
+
+		if (hasHitWall()) circleDir = circleDir * -1;
+		ahead(circleDir * 10);
+
+		if (e != null) {
+			double to = normalRelativeAngle(e.getBearing() - 90);
+			turn(to);
+		}
+
+	}
 	//#endregion
 
 	void scan() {
@@ -69,6 +83,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		double dist = e.getDistance();
 
 		if (dist >= MIN_TARGET_DISTANCE) targetEnemy();
+		else circleAround();
 	}
 
 
