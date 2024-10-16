@@ -8,6 +8,8 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 	double STEP = 10;
 
+	double MAX_ANGLE = 1.33;
+
 	double targetAngle = 0.0;
 
 	public MyFirstBehavior(SimpleRobot  robot) {
@@ -89,8 +91,10 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		//calc shoot
 		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
-		double power = getFirePower(e);
-		fireBullet(power);
+		if (gunAngle <= MAX_ANGLE) {
+			double power = getFirePower(e);
+			fireBullet(power);
+		}
 
 	}
 }
