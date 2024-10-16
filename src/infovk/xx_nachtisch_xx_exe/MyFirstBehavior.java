@@ -8,7 +8,9 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 	double STEP = 10;
 
-	public MyFirstBehavior(SimpleRobot  robot) {
+	ScannedRobotEvent e = null;
+
+	public MyFirstBehavior(SimpleRobot robot) {
 		super(robot);
 	}
 
@@ -26,25 +28,23 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 	
 	//#region utils
-	double getEnemyAngle(ScannedRobotEvent e, double heading) {
+	double getEnemyAngle(double heading) {
 		double own = getHeading() - heading;
 		double enemy = e.getBearing();
 
 		return normalRelativeAngle((own + enemy)) * 1.1;
 	}
 
-	double getFirePower(ScannedRobotEvent e) {
+	double getFirePower() {
 		double dist = Math.abs(e.getDistance());
-
-		System.out.println(dist);
 
 		return dist == 60 ? 3 : min(100 / ( dist - 60 ), 3);
 	}
 	//#endregion
 
 	//#region diving behaviors
-	void targetEnemy(ScannedRobotEvent e) {
-		double targetAngle = getEnemyAngle(e, getHeading());
+	void targetEnemy() {
+		double targetAngle = getEnemyAngle(getHeading());
 		turn(targetAngle);
 
 		double power = STEP;
@@ -56,9 +56,9 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	void scan() {
 		if (!hasScannedRobot()) return;
 
-		ScannedRobotEvent e = getScannedRobotEvent();
+		e = getScannedRobotEvent();
 
-		double lastEnemyAngle = getEnemyAngle(e, getRadarHeading());
+		double lastEnemyAngle = getEnemyAngle(getRadarHeading());
 
 		turnRadar(lastEnemyAngle);
 	}
@@ -66,27 +66,24 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	void drive() {
 		if (!hasScannedRobot()) return;
 
-		ScannedRobotEvent e = getScannedRobotEvent();
 		double dist = e.getDistance();
 
-		if (dist >= MIN_TARGET_DISTANCE) targetEnemy(e);
+		if (dist >= MIN_TARGET_DISTANCE) targetEnemy();
 	}
 
 
 	void shoot() {
 		if (!hasScannedRobot()) return;
 
-		ScannedRobotEvent e = getScannedRobotEvent();
-
 		//get angle & rotate to enemy's pos
-		double gunAngle = getEnemyAngle(e, getGunHeading());
+		double gunAngle = getEnemyAngle(getGunHeading());
 		turnGun(gunAngle);
 
 		//calc shoot
 		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
 		if (gunAngle <= MAX_SHOOT_ANGLE) {
-			double power = getFirePower(e);
+			double power = getFirePower();
 			fireBullet(power);
 		}
 
