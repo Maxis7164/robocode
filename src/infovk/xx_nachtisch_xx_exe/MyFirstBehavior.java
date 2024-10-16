@@ -3,14 +3,10 @@ package infovk.xx_nachtisch_xx_exe;
 import static infovk.xx_nachtisch_xx_exe.Utils.*;
 
 public class MyFirstBehavior extends SimpleRobotBehavior {
-	double DIST_TO_ENEMY = 50.0;
-	double SIZE = 36;
+	double MIN_TARGET_DISTANCE = 300.0;
+	double MAX_SHOOT_ANGLE = 1.33;
 
 	double STEP = 10;
-
-	double MAX_ANGLE = 1.33;
-
-	double targetAngle = 0.0;
 
 	public MyFirstBehavior(SimpleRobot  robot) {
 		super(robot);
@@ -42,20 +38,18 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 		System.out.println(dist);
 
-		return dist < (DIST_TO_ENEMY + SIZE) ? 3 : min(100 / ( dist - 60 ), 3);
+		return dist == 60 ? 3 : min(100 / ( dist - 60 ), 3);
 	}
 	//#endregion
 
 	//#region diving behaviors
 	void targetEnemy(ScannedRobotEvent e) {
-		targetAngle = getEnemyAngle(e, getHeading());
+		double targetAngle = getEnemyAngle(e, getHeading());
 		turn(targetAngle);
 
-		double dist = e.getDistance();
 		double power = STEP;
 
-		if (dist > SIZE + DIST_TO_ENEMY) ahead(power);
-		else ahead(-power);
+		ahead(power);
 	}
 	//#endregion
 
@@ -75,7 +69,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		ScannedRobotEvent e = getScannedRobotEvent();
 		double dist = e.getDistance();
 
-		if (dist >= 300) targetEnemy(e);
+		if (dist >= MIN_TARGET_DISTANCE) targetEnemy(e);
 	}
 
 
@@ -91,7 +85,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		//calc shoot
 		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
-		if (gunAngle <= MAX_ANGLE) {
+		if (gunAngle <= MAX_SHOOT_ANGLE) {
 			double power = getFirePower(e);
 			fireBullet(power);
 		}
