@@ -5,7 +5,7 @@ import static infovk.xx_nachtisch_xx_exe.Utils.*;
 public class MyFirstBehavior extends SimpleRobotBehavior {
 	double MIN_TARGET_DISTANCE = 300.0;
 	double DANGER_DISTANCE = 125.0;
-	double MAX_SHOOT_ANGLE = 1.33;
+	double MAX_SHOOT_ANGLE = 1.66;
 
 	double STEP = 10;
 
@@ -33,10 +33,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 	
 	//#region utils
-	double toRadians(double angle) {
-		return angle / 180 * Math.PI;
-	}
-
 	double getEnemyAngle(double heading) {
 		double own = getHeading() - heading;
 		double enemy = e.getBearing();
@@ -48,38 +44,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		double dist = Math.abs(e.getDistance());
 
 		return dist == 60 ? 3 : min(100 / ( dist - 60 ), 3);
-	}
-
-	double getBulletVelocity(double power) {
-		return 20 - 3 * power;
-	}
-
-	double calcAngleOfPoints(Point p1, Point p2) {
-		double diff = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
-
-		return atan(diff);
-	}
-
-	double getNextEnemyPos(double power) {
-		double heading = getHeading();
-		double bearing = e.getBearing();
-		double enemy = Math.toRadians(e.getHeading());
-		double v = e.getVelocity();
-
-		Point enemyPos = Point.fromPolarCoordinates(heading + bearing, e.getDistance()).add(getPoint());
-
-		Point next = new Point(
-			-Math.sin(enemy) * v * getBulletVelocity(power),
-			Math.cos(enemy) * v * getBulletVelocity(power)
-		);
-
-		double bearingToGun = bearing - heading + getRadarHeading();
-
-		int dir = (int)( bearingToGun / Math.abs(bearingToGun) );
-
-		System.out.println(bearingToGun);
-
-		return v == 0 ? 0 : dir * calcAngleOfPoints(next, enemyPos);
 	}
 	//#endregion
 
@@ -137,14 +101,14 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		//get angle & rotate to enemy's pos
 		double gunAngle = getEnemyAngle(getGunHeading());
 		double power = getFirePower();
-		turnGun(gunAngle + getNextEnemyPos(power));
+		turnGun(gunAngle);
 
 		//calc shoot
 		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
-//		if (gunAngle <= MAX_SHOOT_ANGLE) {
+		if (gunAngle <= MAX_SHOOT_ANGLE) {
 			fireBullet(power);
-//		}
+		}
 
 	}
 }
