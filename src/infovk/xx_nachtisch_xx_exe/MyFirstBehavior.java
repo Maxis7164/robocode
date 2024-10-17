@@ -1,7 +1,5 @@
 package infovk.xx_nachtisch_xx_exe;
 
-import java.awt.*;
-
 import static infovk.xx_nachtisch_xx_exe.Utils.*;
 
 public class MyFirstBehavior extends SimpleRobotBehavior {
@@ -29,12 +27,16 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	@Override
 	void execute() {
 		scan();
-		drive();
+//		drive();
 		shoot();
 	}
 
 	
 	//#region utils
+	double toRadians(double angle) {
+		return angle / 180 * Math.PI;
+	}
+
 	double getEnemyAngle(double heading) {
 		double own = getHeading() - heading;
 		double enemy = e.getBearing();
@@ -48,12 +50,36 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		return dist == 60 ? 3 : min(100 / ( dist - 60 ), 3);
 	}
 
-	double getFuture() {
-		Point enemy = Point.fromPolarCoordinates(getEnemyAngle(getGunHeading()), e.getDistance());
+	double getBulletVelocity(double power) {
+		return 20 - 3 * power;
+	}
 
-		paintDot(enemy, Color.MAGENTA);
+	double calcAngleOfPoints(Point p1, Point p2) {
+		double diff = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
 
-		return 0.0;
+		return atan(diff);
+	}
+
+	double getNextEnemyPos(double power) {
+		double heading = getHeading();
+		double bearing = e.getBearing();
+		double enemy = Math.toRadians(e.getHeading());
+		double v = e.getVelocity();
+
+		Point enemyPos = Point.fromPolarCoordinates(heading + bearing, e.getDistance()).add(getPoint());
+
+		Point next = new Point(
+			-Math.sin(enemy) * v * getBulletVelocity(power),
+			Math.cos(enemy) * v * getBulletVelocity(power)
+		);
+
+		double bearingToGun = bearing - heading + getRadarHeading();
+
+		int dir = (int)( bearingToGun / Math.abs(bearingToGun) );
+
+		System.out.println(bearingToGun);
+
+		return v == 0 ? 0 : dir * calcAngleOfPoints(next, enemyPos);
 	}
 	//#endregion
 
@@ -78,19 +104,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		}
 
 	}
-
-	void escape() {
-		double enemyAngle = getEnemyAngle(getHeading());
-
-		if (hasHitWall()) {
-			turn(90);
-			ahead(-50);
-		} else if (getTurnRemaining() == 0) {
-			turn(-enemyAngle);
-			ahead(50);
-		};
-
-	}
 	//#endregion
 
 	void scan() {
@@ -109,7 +122,6 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 		double dist = e.getDistance();
 
 		if (escapeTimeLeft > 0.0) {
-			escape();
 			escapeTimeLeft--;
 		} else {
 			if (dist >= MIN_TARGET_DISTANCE) targetEnemy();
@@ -124,15 +136,15 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 
 		//get angle & rotate to enemy's pos
 		double gunAngle = getEnemyAngle(getGunHeading());
-		turnGun(gunAngle);
+		double power = getFirePower();
+		turnGun(gunAngle + getNextEnemyPos(power));
 
 		//calc shoot
 		if (getGunHeat() > 0 || e.getDistance() > 300) return;
 
-		if (gunAngle <= MAX_SHOOT_ANGLE) {
-			double power = getFirePower();
+//		if (gunAngle <= MAX_SHOOT_ANGLE) {
 			fireBullet(power);
-		}
+//		}
 
 	}
 }
