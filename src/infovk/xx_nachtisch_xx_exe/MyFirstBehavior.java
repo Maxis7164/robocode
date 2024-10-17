@@ -27,7 +27,7 @@ public class MyFirstBehavior extends SimpleRobotBehavior {
 	@Override
 	void execute() {
 		scan();
-//		drive();
+		drive();
 		shoot();
 	}
 
